@@ -1,5 +1,5 @@
 from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_snake
+from pydantic.alias_generators import to_camel
 
 
 class Result:
@@ -9,21 +9,22 @@ class Result:
         self.data = data if data else {}
 
 
-class SummaryItem(BaseModel):
-    model_config = ConfigDict(alias_generator=to_snake)
+class GovinfoModel(BaseModel):
+    model_config = ConfigDict(alias_generator=to_camel)
+
+
+class SummaryItem(GovinfoModel):
     collection_code: str
     collection_name: str
     package_count: int
     granule_count: int | None
 
 
-class CollectionSummary(BaseModel):
-    model_config = ConfigDict(alias_generator=to_snake)
+class CollectionSummary(GovinfoModel):
     collections: list[SummaryItem]
 
 
-class PackageInfo(BaseModel):
-    model_config = ConfigDict(alias_generator=to_snake)
+class PackageInfo(GovinfoModel):
     package_id: str
     last_modified: str
     package_link: str
@@ -33,8 +34,7 @@ class PackageInfo(BaseModel):
     date_issued: str
 
 
-class CollectionContainer(BaseModel):
-    model_config = ConfigDict(alias_generator=to_snake)
+class CollectionContainer(GovinfoModel):
     count: int
     message: str | None
     next_page: str | None
