@@ -1,11 +1,13 @@
-from .config import BASE_URL
-from .exceptions import GovinfoException
-from .models import Result, CollectionContainer, CollectionSummary
+from govinfo.collections import CollectionsMixin
+from govinfo.config import BASE_URL
+from govinfo.exceptions import GovinfoException
+from govinfo.models import Result
+
 import httpx
 from json import JSONDecodeError
 
 
-class Govinfo:
+class Govinfo(CollectionsMixin):
     def __init__(self, api_key: str = "DEMO_KEY"):
         self._url = f"{BASE_URL}"
         self._api_key = api_key
@@ -27,29 +29,6 @@ class Govinfo:
                 response.status_code, message=response.reason_phrase, data=data
             )
         raise GovinfoException(f"{response.status_code}: {response.reason_phrase}")
-
-    def collections(
-        self,
-        collection: str = None,
-        start_date: str = None,
-        end_date: str = None,
-        **kwargs,
-    ):
-        endpoint_parts = ["collections", collection, start_date, end_date]
-        endpoint = "/".join(part for part in endpoint_parts if part is not None)
-        page_size = kwargs.get("pageSize", 20)
-        offset_mark = kwargs.get("offsetMark", "*")
-        params = {"pageSize": page_size, "offsetMark": offset_mark}
-        try:
-            result = self._get(endpoint, params=params)
-        except GovinfoException as e:
-            raise e
-        if collection is None:
-            validated = CollectionSummary(**result.data)
-        else:
-            validated = CollectionContainer(**result.data)
-        # TODO: dump with(out) alias?
-        return validated.model_dump()
 
     @property
     def url(self):
