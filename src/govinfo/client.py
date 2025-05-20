@@ -1,6 +1,6 @@
 from .config import BASE_URL
 from .exceptions import GovinfoException
-from .models import Result
+from .models import Result, CollectionSummary
 import httpx
 from json import JSONDecodeError
 import logging
@@ -12,7 +12,7 @@ class Govinfo:
         self._api_key = api_key
         self._logger = logger or logging.getLogger(__name__)
 
-    def get(self, endpoint: str, params: dict = None) -> Result:
+    def _get(self, endpoint: str, params: dict = None) -> Result:
         url = f"{self.url}/{endpoint}"
         headers = {"x-api-key": self._api_key}
         log_line_pre = f"url={url}, params={params}"
@@ -41,6 +41,22 @@ class Govinfo:
             )
         self._logger.error(msg=log_line)
         raise GovinfoException(f"{response.status_code}: {response.reason_phrase}")
+
+    def collections(
+        self,
+        collection: str = None,
+        start_date: str = None,
+        end_date: str = None,
+        params: dict = None,
+    ):
+        endpoint_parts = ["collections", collection, start_date, end_date]
+        endpoint = "/".join(part for part in endpoint_parts if part is not None)
+        try:
+            result = self._get(endpoint, params=params)
+        except GovinfoException as e:
+            raise e
+        print(result.data)
+        return CollectionSummary(**result.data)
 
     @property
     def url(self):
