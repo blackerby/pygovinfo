@@ -55,7 +55,6 @@ class Govinfo:
             result = self._get(endpoint, params=params)
         except GovinfoException as e:
             raise e
-        print(result.data)
         return CollectionSummary(**result.data)
 
     @property

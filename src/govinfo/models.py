@@ -9,22 +9,21 @@ class Result:
         self.data = data if data else {}
 
 
-class GovinfoModel(BaseModel):
+class SummaryItem(BaseModel):
     model_config = ConfigDict(alias_generator=to_snake)
+    collection_code: str
+    collection_name: str
+    package_count: int
+    granule_count: int | None
 
 
-class SummaryItem(GovinfoModel):
-    collectionCode: str
-    collectionName: str
-    packageCount: int
-    granuleCount: int | None
-
-
-class CollectionSummary(GovinfoModel):
+class CollectionSummary(BaseModel):
+    model_config = ConfigDict(alias_generator=to_snake)
     collections: list[SummaryItem]
 
 
-class PackageInfo(GovinfoModel):
+class PackageInfo(BaseModel):
+    model_config = ConfigDict(alias_generator=to_snake)
     package_id: str
     last_modified: str
     package_link: str
@@ -34,7 +33,8 @@ class PackageInfo(GovinfoModel):
     date_issued: str
 
 
-class CollectionContainer(GovinfoModel):
+class CollectionContainer(BaseModel):
+    model_config = ConfigDict(alias_generator=to_snake)
     count: int
     message: str | None
     next_page: str | None
