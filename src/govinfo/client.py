@@ -1,4 +1,5 @@
 from govinfo.collections import CollectionsMixin
+from govinfo.packages import PackagesMixin
 from govinfo.config import BASE_URL
 from govinfo.exceptions import GovinfoException
 from govinfo.models import Result
@@ -7,7 +8,7 @@ import httpx
 from json import JSONDecodeError
 
 
-class Govinfo(CollectionsMixin):
+class Govinfo(CollectionsMixin, PackagesMixin):
     def __init__(self, api_key: str = "DEMO_KEY"):
         self._url = f"{BASE_URL}"
         self._api_key = api_key
