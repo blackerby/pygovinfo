@@ -1,6 +1,57 @@
 from govinfo.config import PAGE_DEFAULT, OFFSET_DEFAULT
 from govinfo.exceptions import GovinfoException
-from govinfo.models import GranuleContainer
+from govinfo.models import GovinfoModel
+
+from pydantic import ConfigDict, Field
+
+
+class PackageInfo(GovinfoModel):
+    package_id: str
+    last_modified: str
+    package_link: str
+    doc_class: str
+    title: str
+    congress: str
+    date_issued: str
+
+
+class GranuleMetadata(GovinfoModel):
+    title: str
+    granule_id: str
+    granule_link: str
+    granule_class: str
+    md5: str = Field(default=None)
+
+
+class GranuleContainer(GovinfoModel):
+    count: int
+    offset: int | None
+    page_size: int
+    next_page: str | None
+    previous_page: str | None
+    granules: list[GranuleMetadata]
+    message: str = Field(default=None)
+
+
+class PackageSummary(GovinfoModel):
+    # "allow" since there are so many variations on what is returned
+    model_config = ConfigDict(extra="allow")
+    category: str
+    date_issued: str
+    collection_code: str
+    collection_name: str
+    doc_class: str
+    publisher: str
+    last_modfied: str
+    branch: str
+    # TODO: specify download model
+    download: dict
+    # TODO: specify other_identifier model
+    other_identifier: dict
+
+
+# TODO: create models that inherit from PackageSummary for specific packages types
+# start with BILLS, PLAW, CREC, CRPT, CPRT
 
 
 class PackagesMixin:

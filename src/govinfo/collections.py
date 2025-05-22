@@ -1,6 +1,28 @@
 from govinfo.config import PAGE_DEFAULT, OFFSET_DEFAULT
 from govinfo.exceptions import GovinfoException
-from govinfo.models import CollectionContainer, CollectionSummary
+from govinfo.models import (
+    GovinfoModel,
+    PackageInfo,
+)
+
+
+class SummaryItem(GovinfoModel):
+    collection_code: str
+    collection_name: str
+    package_count: int
+    granule_count: int | None
+
+
+class CollectionSummary(GovinfoModel):
+    collections: list[SummaryItem]
+
+
+class CollectionContainer(GovinfoModel):
+    count: int
+    message: str | None
+    next_page: str | None
+    previous_page: str | None
+    packages: list[PackageInfo]
 
 
 class CollectionsMixin:
