@@ -4,6 +4,7 @@ from govinfo.models import (
     GovinfoModel,
     PackageInfo,
 )
+from pydantic.networks import HttpUrl
 
 
 class SummaryItem(GovinfoModel):
@@ -20,8 +21,8 @@ class CollectionSummary(GovinfoModel):
 class CollectionContainer(GovinfoModel):
     count: int
     message: str | None
-    next_page: str | None
-    previous_page: str | None
+    next_page: HttpUrl | None
+    previous_page: HttpUrl | None
     packages: list[PackageInfo]
 
 

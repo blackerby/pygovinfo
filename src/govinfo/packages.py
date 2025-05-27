@@ -3,22 +3,23 @@ from govinfo.exceptions import GovinfoException
 from govinfo.models import GovinfoModel
 
 from pydantic import ConfigDict, Field
+from pydantic.networks import HttpUrl
 
 
 class PackageInfo(GovinfoModel):
     package_id: str
     last_modified: str
-    package_link: str
+    package_link: HttpUrl
     doc_class: str
     title: str
-    congress: str
+    congress: int
     date_issued: str
 
 
 class GranuleMetadata(GovinfoModel):
     title: str
     granule_id: str
-    granule_link: str
+    granule_link: HttpUrl
     granule_class: str
     md5: str = Field(default=None)
 
@@ -27,8 +28,8 @@ class GranuleContainer(GovinfoModel):
     count: int
     offset: int | None
     page_size: int
-    next_page: str | None
-    previous_page: str | None
+    next_page: HttpUrl | None
+    previous_page: HttpUrl | None
     granules: list[GranuleMetadata]
     message: str = Field(default=None)
 
