@@ -1,3 +1,4 @@
+from enum import StrEnum, auto
 from dataclasses import dataclass
 
 from pydantic import BaseModel, ConfigDict
@@ -16,6 +17,12 @@ class GovinfoModel(BaseModel):
     # e.g., dateIssued, packageId, collectionCode, collectionName, docClass, category?
     # download?, last_modified, title?
     model_config = ConfigDict(alias_generator=to_camel)
+
+
+class Branch(StrEnum):
+    LEGISLATIVE = auto()
+    EXECUTIVE = auto()
+    JUDICIAL = auto()
 
 
 # NOTE: response objects from `related` endpoints and `packages` summary endpoints are similarly vague

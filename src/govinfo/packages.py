@@ -1,6 +1,8 @@
+from datetime import date, datetime
+
 from govinfo.config import PAGE_DEFAULT, OFFSET_DEFAULT
 from govinfo.exceptions import GovinfoException
-from govinfo.models import GovinfoModel
+from govinfo.models import Branch, GovinfoModel
 
 from pydantic import ConfigDict, Field
 from pydantic.networks import HttpUrl
@@ -8,12 +10,12 @@ from pydantic.networks import HttpUrl
 
 class PackageInfo(GovinfoModel):
     package_id: str
-    last_modified: str
+    last_modified: datetime
     package_link: HttpUrl
     doc_class: str
     title: str
     congress: int
-    date_issued: str
+    date_issued: date
 
 
 class GranuleMetadata(GovinfoModel):
@@ -38,13 +40,13 @@ class PackageSummary(GovinfoModel):
     # "allow" since there are so many variations on what is returned
     model_config = ConfigDict(extra="allow")
     category: str
-    date_issued: str
+    date_issued: date
     collection_code: str
     collection_name: str
     doc_class: str
     publisher: str
-    last_modfied: str
-    branch: str
+    last_modfied: datetime
+    branch: Branch
     # TODO: specify download model
     download: dict
     # TODO: specify other_identifier model
