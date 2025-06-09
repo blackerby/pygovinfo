@@ -1,9 +1,7 @@
 from govinfo.config import PAGE_DEFAULT, OFFSET_DEFAULT
 from govinfo.exceptions import GovinfoException
-from govinfo.models import (
-    GovinfoModel,
-    PackageInfo,
-)
+from govinfo.models import GovinfoModel
+from govinfo.packages import PackageInfo
 from pydantic.networks import HttpUrl
 
 

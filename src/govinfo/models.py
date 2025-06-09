@@ -1,5 +1,5 @@
 from enum import StrEnum, auto
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
@@ -9,7 +9,7 @@ from pydantic.alias_generators import to_camel
 class Result:
     status_code: int
     message: str = ""
-    data: dict = {}
+    data: dict = field(default_factory=dict)
 
 
 class GovinfoModel(BaseModel):
