@@ -34,10 +34,7 @@ class CollectionsMixin:
     ) -> RequestArgs:
         endpoint_parts = ["collections", collection, start_date, end_date]
         path = "/".join(part for part in endpoint_parts if part is not None)
-        page_size = kwargs.get("page_size", PAGE_DEFAULT)
-        offset_mark = kwargs.get("offset_mark", OFFSET_DEFAULT)
-        params = {"pageSize": page_size, "offsetMark": offset_mark}
-
+        params = self._set_params(**kwargs)
         return (path, params)
 
     def collections(
@@ -47,12 +44,12 @@ class CollectionsMixin:
         end_date: str = None,
         **kwargs,
     ):
-        request = self._build_collections_request(
+        args = self._build_collections_request(
             collection, start_date, end_date, **kwargs
         )
 
         try:
-            result = self._get(request)
+            result = self._get(args)
         except GovinfoException as e:
             raise e
 

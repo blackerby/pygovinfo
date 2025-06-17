@@ -1,6 +1,6 @@
 from govinfo.collections import CollectionsMixin
 from govinfo.packages import PackagesMixin
-from govinfo.config import BASE_URL, RequestArgs
+from govinfo.config import BASE_URL, OFFSET_DEFAULT, PAGE_DEFAULT, RequestArgs
 from govinfo.exceptions import GovinfoException
 from govinfo.models import Result
 
@@ -16,7 +16,7 @@ class Govinfo(CollectionsMixin, PackagesMixin):
     def _get(self, args: RequestArgs) -> Result:
         headers = {"x-api-key": self._api_key}
         path, params = args
-        with httpx.Client(base_url=self.url, headers=headers, params=params) as client:
+        with httpx.Client(base_url=self._url, headers=headers, params=params) as client:
             response = client.get(path)
             try:
                 data = response.json()
@@ -31,11 +31,21 @@ class Govinfo(CollectionsMixin, PackagesMixin):
 
     def __repr__(self) -> str:
         api_key = "user supplied" if self._is_api_key_set() else self._api_key
-        return f"Govinfo(url={self.url!r}, api_key={api_key!r})"
+        return f"Govinfo(url={self._url!r}, api_key={api_key!r})"
 
     def _is_api_key_set(self) -> bool:
         return self._api_key != "DEMO_KEY"
 
-    @property
-    def url(self):
-        return self._url
+    def _set_params(self, *args, **kwargs) -> dict[str, str]:
+        default_params = {"offsetMark": OFFSET_DEFAULT, "pageSize": PAGE_DEFAULT}
+        params = (
+            default_params
+            if not kwargs
+            else default_params
+            | {
+                key.split("_")[0]
+                + "".join(word.capitalize() for word in key.split("_")[1:]): value
+                for key, value in kwargs.items()
+            }
+        )
+        return params

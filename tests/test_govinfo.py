@@ -41,3 +41,24 @@ def test_build_collections_request_with_args():
     )
     assert path == "collections/bills/2025-06-16T00:00:00Z"
     assert params == {"offsetMark": "something", "pageSize": 10}
+
+
+def test_build_default_packages_granules_request():
+    govinfo = Govinfo()
+    path, params = govinfo._build_granules_request("CREC-2018-01-04")
+    assert path == "packages/CREC-2018-01-04/granules"
+    assert params == {"offsetMark": OFFSET_DEFAULT, "pageSize": PAGE_DEFAULT}
+
+
+def test_build__packages_granules_request_with_args():
+    govinfo = Govinfo()
+    path, params = govinfo._build_granules_request(
+        "CREC-2018-01-04", granule_class="something", md5="something"
+    )
+    assert path == "packages/CREC-2018-01-04/granules"
+    assert params == {
+        "offsetMark": OFFSET_DEFAULT,
+        "pageSize": PAGE_DEFAULT,
+        "granuleClass": "something",
+        "md5": "something",
+    }
