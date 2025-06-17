@@ -1,4 +1,4 @@
-from govinfo.config import PAGE_DEFAULT, OFFSET_DEFAULT
+from govinfo.config import PAGE_DEFAULT, OFFSET_DEFAULT, RequestArgs
 from govinfo.exceptions import GovinfoException
 from govinfo.models import GovinfoModel
 from govinfo.packages import PackageInfo
@@ -25,6 +25,21 @@ class CollectionContainer(GovinfoModel):
 
 
 class CollectionsMixin:
+    def _build_collections_request(
+        self,
+        collection: str = None,
+        start_date: str = None,
+        end_date: str = None,
+        **kwargs,
+    ) -> RequestArgs:
+        endpoint_parts = ["collections", collection, start_date, end_date]
+        path = "/".join(part for part in endpoint_parts if part is not None)
+        page_size = kwargs.get("page_size", PAGE_DEFAULT)
+        offset_mark = kwargs.get("offset_mark", OFFSET_DEFAULT)
+        params = {"pageSize": page_size, "offsetMark": offset_mark}
+
+        return (path, params)
+
     def collections(
         self,
         collection: str = None,
@@ -32,14 +47,12 @@ class CollectionsMixin:
         end_date: str = None,
         **kwargs,
     ):
-        endpoint_parts = ["collections", collection, start_date, end_date]
-        self._endpoint = "/".join(part for part in endpoint_parts if part is not None)
-        page_size = kwargs.get("pageSize", PAGE_DEFAULT)
-        offset_mark = kwargs.get("offsetMark", OFFSET_DEFAULT)
-        params = {"pageSize": page_size, "offsetMark": offset_mark}
+        request = self._build_collections_request(
+            collection, start_date, end_date, **kwargs
+        )
 
         try:
-            result = self._get(self.endpoint, params=params)
+            result = self._get(request)
         except GovinfoException as e:
             raise e
 

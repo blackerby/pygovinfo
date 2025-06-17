@@ -1,4 +1,5 @@
 from govinfo import Govinfo
+from govinfo.config import OFFSET_DEFAULT, PAGE_DEFAULT
 
 
 def test_govinfo_default_api_key():
@@ -26,6 +27,17 @@ def test_govinfo_repr():
     )
 
 
-def test_govinfo_endpoint_starts_as_none():
+def test_build_default_collections_request():
     govinfo = Govinfo()
-    assert govinfo.endpoint is None
+    path, params = govinfo._build_collections_request()
+    assert path == "collections"
+    assert params == {"offsetMark": OFFSET_DEFAULT, "pageSize": PAGE_DEFAULT}
+
+
+def test_build_collections_request_with_args():
+    govinfo = Govinfo()
+    path, params = govinfo._build_collections_request(
+        "bills", "2025-06-16T00:00:00Z", page_size=10, offset_mark="something"
+    )
+    assert path == "collections/bills/2025-06-16T00:00:00Z"
+    assert params == {"offsetMark": "something", "pageSize": 10}
