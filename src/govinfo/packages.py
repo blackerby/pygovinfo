@@ -1,11 +1,11 @@
 from datetime import date, datetime
 
+from pydantic import ConfigDict, Field
+from pydantic.networks import HttpUrl
+
 from govinfo.config import RequestArgs
 from govinfo.exceptions import GovinfoException
 from govinfo.models import Branch, GovinfoModel
-
-from pydantic import ConfigDict, Field
-from pydantic.networks import HttpUrl
 
 
 class PackageInfo(GovinfoModel):

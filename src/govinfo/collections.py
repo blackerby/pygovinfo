@@ -1,8 +1,9 @@
-from govinfo.config import PAGE_DEFAULT, OFFSET_DEFAULT, RequestArgs
+from pydantic.networks import HttpUrl
+
+from govinfo.config import OFFSET_DEFAULT, PAGE_DEFAULT, RequestArgs
 from govinfo.exceptions import GovinfoException
 from govinfo.models import GovinfoModel
 from govinfo.packages import PackageInfo
-from pydantic.networks import HttpUrl
 
 
 class SummaryItem(GovinfoModel):

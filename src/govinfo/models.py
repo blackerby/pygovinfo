@@ -1,5 +1,5 @@
-from enum import StrEnum, auto
 from dataclasses import dataclass, field
+from enum import StrEnum, auto
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel

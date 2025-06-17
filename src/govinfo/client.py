@@ -1,11 +1,12 @@
+from json import JSONDecodeError
+
+import httpx
+
 from govinfo.collections import CollectionsMixin
-from govinfo.packages import PackagesMixin
 from govinfo.config import BASE_URL, OFFSET_DEFAULT, PAGE_DEFAULT, RequestArgs
 from govinfo.exceptions import GovinfoException
 from govinfo.models import Result
-
-import httpx
-from json import JSONDecodeError
+from govinfo.packages import PackagesMixin
 
 
 class Govinfo(CollectionsMixin, PackagesMixin):
