@@ -10,6 +10,10 @@ from govinfo.packages import PackagesMixin
 
 
 class Govinfo(CollectionsMixin, PackagesMixin):
+    """Wrapper class for the GovInfo API.
+
+    Users can supply an API key or use the default value, DEMO_KEY"""
+
     def __init__(self, api_key: str = "DEMO_KEY"):
         self._url = f"{BASE_URL}"
         self._api_key = api_key

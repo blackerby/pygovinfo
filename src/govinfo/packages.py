@@ -68,6 +68,7 @@ class PackagesMixin:
         return (path, params)
 
     def granules(self, package_id: str, **kwargs):
+        """Call the packages/{package_id}/granules endpoint of the GovInfo API."""
         args = self._build_granules_request(package_id, **kwargs)
 
         try:

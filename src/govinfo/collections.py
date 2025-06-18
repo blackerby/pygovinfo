@@ -45,6 +45,7 @@ class CollectionsMixin:
         end_date: str = None,
         **kwargs,
     ):
+        """Call the collections endpoint of the GovInfo API."""
         args = self._build_collections_request(
             collection, start_date, end_date, **kwargs
         )
