@@ -12,11 +12,6 @@ def test_govinfo_user_supplied_api_key():
     assert govinfo._api_key == "dummy key"
 
 
-def test_govinfo_base_url():
-    govinfo = Govinfo()
-    assert govinfo.url == "https://api.govinfo.gov"
-
-
 def test_govinfo_repr():
     govinfo = Govinfo()
     assert str(govinfo) == "Govinfo(url='https://api.govinfo.gov', api_key='DEMO_KEY')"

@@ -1,5 +1,3 @@
-from pydantic.networks import HttpUrl
-
 from govinfo.config import RequestArgs
 from govinfo.exceptions import GovinfoException
 from govinfo.models import GovinfoModel
@@ -20,8 +18,8 @@ class CollectionSummary(GovinfoModel):
 class CollectionContainer(GovinfoModel):
     count: int
     message: str | None
-    next_page: HttpUrl | None
-    previous_page: HttpUrl | None
+    next_page: str | None
+    previous_page: str | None
     packages: list[PackageInfo]
 
 
