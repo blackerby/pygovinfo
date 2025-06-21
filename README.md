@@ -1,5 +1,7 @@
 # API client for GovInfo
 
 ## TODO:
-- add published method
+- testing (including mock API calls)
+- documentation
+- refactoring/DRYing up code
 
