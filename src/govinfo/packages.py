@@ -17,7 +17,7 @@ class PackagesMixin:
         args = self._build_granules_request(package_id, **kwargs)
 
         try:
-            result = self._get(args)
+            result = self._get("granules", args)
         except GovinfoException as e:
             raise e
 

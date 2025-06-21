@@ -3,7 +3,7 @@ from json import JSONDecodeError
 import httpx
 
 from govinfo.collections import CollectionsMixin
-from govinfo.config import BASE_URL, OFFSET_DEFAULT, PAGE_DEFAULT, RequestArgs
+from govinfo.config import BASE_URL, KEYS, OFFSET_DEFAULT, PAGE_DEFAULT, RequestArgs
 from govinfo.exceptions import GovinfoException
 from govinfo.models import Result
 from govinfo.packages import PackagesMixin
@@ -18,17 +18,23 @@ class Govinfo(CollectionsMixin, PackagesMixin):
         self._url = f"{BASE_URL}"
         self._api_key = api_key
 
-    def _get(self, args: RequestArgs) -> Result:
+    def _get(self, endpoint: str, args: RequestArgs) -> Result:
         headers = {"x-api-key": self._api_key}
         path, params = args
-        with httpx.Client(base_url=self._url, headers=headers, params=params) as client:
-            response = client.get(path)
+        with httpx.Client(headers=headers) as client:
+            response = client.get("/".join([self._url, path]), params=params)
             try:
-                data = response.json()
+                payload = response.json()
             except (ValueError, JSONDecodeError) as e:
                 raise GovinfoException("Bad JSON in response") from e
             is_success = 299 >= response.status_code >= 200
             if is_success:
+                payload_key = KEYS[endpoint]
+                data = payload[payload_key]
+                while next_page := payload["nextPage"]:
+                    response = client.get(next_page)
+                    payload = response.json()
+                    data.extend(payload[payload_key])
                 return Result(
                     response.status_code, message=response.reason_phrase, data=data
                 )

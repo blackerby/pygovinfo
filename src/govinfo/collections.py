@@ -28,7 +28,7 @@ class CollectionsMixin:
         )
 
         try:
-            result = self._get(args)
+            result = self._get("collections", args)
         except GovinfoException as e:
             raise e
 
