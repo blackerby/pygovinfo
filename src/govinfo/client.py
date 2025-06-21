@@ -28,14 +28,17 @@ class GovInfo(CollectionsMixin, PackagesMixin):
                 raise GovInfoException("Bad JSON in response") from e
             is_success = 299 >= response.status_code >= 200
             if is_success:
-                payload_key = self._set_payload_key(endpoint, path)
-                for item in payload[payload_key]:
-                    yield item
-                while next_page := payload.get("nextPage"):
-                    response = client.get(next_page)
-                    payload = response.json()
+                if endpoint is None:
+                    yield payload
+                else:
+                    payload_key = self._set_payload_key(endpoint, path)
                     for item in payload[payload_key]:
                         yield item
+                    while next_page := payload.get("nextPage"):
+                        response = client.get(next_page)
+                        payload = response.json()
+                        for item in payload[payload_key]:
+                            yield item
             else:
                 raise GovInfoException(
                     f"{response.status_code}: {response.reason_phrase}"
