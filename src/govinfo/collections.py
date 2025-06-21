@@ -21,15 +21,14 @@ class CollectionsMixin:
         start_date: str = None,
         end_date: str = None,
         **kwargs,
-    ) -> list[dict]:
+    ):
         """Call the collections endpoint of the GovInfo API."""
         args = self._build_collections_request(
             collection, start_date, end_date, **kwargs
         )
 
         try:
-            result = self._get("collections", args)
+            # result = self._get("collections", args)
+            return self._get("collections", args)
         except GovInfoException as e:
             raise e
-
-        return result.data

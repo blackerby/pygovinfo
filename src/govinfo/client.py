@@ -5,7 +5,7 @@ import httpx
 from govinfo.collections import CollectionsMixin
 from govinfo.config import BASE_URL, KEYS, OFFSET_DEFAULT, PAGE_DEFAULT, RequestArgs
 from govinfo.exceptions import GovInfoException
-from govinfo.models import Result
+
 from govinfo.packages import PackagesMixin
 
 
@@ -18,7 +18,7 @@ class GovInfo(CollectionsMixin, PackagesMixin):
         self._url = f"{BASE_URL}"
         self._api_key = api_key
 
-    def _get(self, endpoint: str, args: RequestArgs) -> Result:
+    def _get(self, endpoint: str, args: RequestArgs):
         headers = {"x-api-key": self._api_key}
         path, params = args
         with httpx.Client(headers=headers) as client:
@@ -30,15 +30,17 @@ class GovInfo(CollectionsMixin, PackagesMixin):
             is_success = 299 >= response.status_code >= 200
             if is_success:
                 payload_key = self._set_payload_key(endpoint, path)
-                data = payload[payload_key]
+                for item in payload[payload_key]:
+                    yield item
                 while next_page := payload.get("nextPage"):
                     response = client.get(next_page)
                     payload = response.json()
-                    data.extend(payload[payload_key])
-                return Result(
-                    response.status_code, message=response.reason_phrase, data=data
+                    for item in payload[payload_key]:
+                        yield item
+            else:
+                raise GovInfoException(
+                    f"{response.status_code}: {response.reason_phrase}"
                 )
-            raise GovInfoException(f"{response.status_code}: {response.reason_phrase}")
 
     def __repr__(self) -> str:
         api_key = "user supplied" if self._is_api_key_set() else self._api_key
