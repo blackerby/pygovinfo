@@ -15,5 +15,8 @@ granule_id = "CREC-2018-01-04-pt1-PgD7-2"
 # granules = govinfo.granules(package_id)
 # pprint(list(granules))
 
-crec_summary = govinfo.summary(package_id)
-pprint(crec_summary)
+# crec_summary = govinfo.summary(package_id)
+# pprint(crec_summary)
+
+published = govinfo.published("bills", "2025-06-20")
+pprint(list(published))
