@@ -2,14 +2,12 @@ from json import JSONDecodeError
 
 import httpx
 
-from govinfo.collections import CollectionsMixin
 from govinfo.config import BASE_URL, KEYS, OFFSET_DEFAULT, PAGE_DEFAULT, RequestArgs
+from govinfo.endpoints import Collections, Packages, Published
 from govinfo.exceptions import GovInfoException
-from govinfo.packages import PackagesMixin
-from govinfo.published import PublishedMixin
 
 
-class GovInfo(CollectionsMixin, PackagesMixin, PublishedMixin):
+class GovInfo(Collections, Packages, Published):
     """Wrapper class for the GovInfo API.
 
     Users can supply an API key or use the default value, DEMO_KEY"""
