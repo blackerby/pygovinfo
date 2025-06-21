@@ -1,5 +1,5 @@
 from govinfo.config import RequestArgs
-from govinfo.exceptions import GovinfoException
+from govinfo.exceptions import GovInfoException
 
 
 class CollectionsMixin:
@@ -21,7 +21,7 @@ class CollectionsMixin:
         start_date: str = None,
         end_date: str = None,
         **kwargs,
-    ):
+    ) -> list[dict]:
         """Call the collections endpoint of the GovInfo API."""
         args = self._build_collections_request(
             collection, start_date, end_date, **kwargs
@@ -29,7 +29,7 @@ class CollectionsMixin:
 
         try:
             result = self._get("collections", args)
-        except GovinfoException as e:
+        except GovInfoException as e:
             raise e
 
         return result.data

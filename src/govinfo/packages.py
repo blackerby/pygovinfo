@@ -1,5 +1,5 @@
 from govinfo.config import RequestArgs
-from govinfo.exceptions import GovinfoException
+from govinfo.exceptions import GovInfoException
 
 
 class PackagesMixin:
@@ -12,13 +12,13 @@ class PackagesMixin:
         params = self._set_params(**kwargs)
         return (path, params)
 
-    def granules(self, package_id: str, **kwargs):
+    def granules(self, package_id: str, **kwargs) -> list[dict]:
         """Call the packages/{package_id}/granules endpoint of the GovInfo API."""
         args = self._build_granules_request(package_id, **kwargs)
 
         try:
             result = self._get("granules", args)
-        except GovinfoException as e:
+        except GovInfoException as e:
             raise e
 
         return result.data

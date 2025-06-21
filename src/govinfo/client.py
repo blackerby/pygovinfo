@@ -4,12 +4,12 @@ import httpx
 
 from govinfo.collections import CollectionsMixin
 from govinfo.config import BASE_URL, KEYS, OFFSET_DEFAULT, PAGE_DEFAULT, RequestArgs
-from govinfo.exceptions import GovinfoException
+from govinfo.exceptions import GovInfoException
 from govinfo.models import Result
 from govinfo.packages import PackagesMixin
 
 
-class Govinfo(CollectionsMixin, PackagesMixin):
+class GovInfo(CollectionsMixin, PackagesMixin):
     """Wrapper class for the GovInfo API.
 
     Users can supply an API key or use the default value, DEMO_KEY"""
@@ -26,23 +26,23 @@ class Govinfo(CollectionsMixin, PackagesMixin):
             try:
                 payload = response.json()
             except (ValueError, JSONDecodeError) as e:
-                raise GovinfoException("Bad JSON in response") from e
+                raise GovInfoException("Bad JSON in response") from e
             is_success = 299 >= response.status_code >= 200
             if is_success:
-                payload_key = KEYS[endpoint]
+                payload_key = self._set_payload_key(endpoint, path)
                 data = payload[payload_key]
-                while next_page := payload["nextPage"]:
+                while next_page := payload.get("nextPage"):
                     response = client.get(next_page)
                     payload = response.json()
                     data.extend(payload[payload_key])
                 return Result(
                     response.status_code, message=response.reason_phrase, data=data
                 )
-            raise GovinfoException(f"{response.status_code}: {response.reason_phrase}")
+            raise GovInfoException(f"{response.status_code}: {response.reason_phrase}")
 
     def __repr__(self) -> str:
         api_key = "user supplied" if self._is_api_key_set() else self._api_key
-        return f"Govinfo(url={self._url!r}, api_key={api_key!r})"
+        return f"GovInfo(url={self._url!r}, api_key={api_key!r})"
 
     def _is_api_key_set(self) -> bool:
         return self._api_key != "DEMO_KEY"
@@ -60,3 +60,10 @@ class Govinfo(CollectionsMixin, PackagesMixin):
             }
         )
         return params
+
+    def _set_payload_key(self, endpoint: str, path: str) -> str:
+        if endpoint == "collections" and path == "collections":
+            payload_key = "collections"
+        else:
+            payload_key = KEYS[endpoint]
+        return payload_key

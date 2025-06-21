@@ -1,1 +1,1 @@
-from .client import Govinfo as Govinfo
+from .client import GovInfo as GovInfo
