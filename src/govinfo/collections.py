@@ -1,5 +1,6 @@
 from govinfo.config import RequestArgs
 from govinfo.exceptions import GovInfoException
+from govinfo.models import Collection, Package
 
 
 class CollectionsMixin:
@@ -28,7 +29,11 @@ class CollectionsMixin:
         )
 
         try:
-            # result = self._get("collections", args)
-            return self._get("collections", args)
+            if collection:
+                for item in self._get("collections", args):
+                    yield Package(**item).model_dump()
+            else:
+                for item in self._get("collections", args):
+                    yield Collection(**item).model_dump()
         except GovInfoException as e:
             raise e

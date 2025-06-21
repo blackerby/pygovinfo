@@ -5,7 +5,6 @@ import httpx
 from govinfo.collections import CollectionsMixin
 from govinfo.config import BASE_URL, KEYS, OFFSET_DEFAULT, PAGE_DEFAULT, RequestArgs
 from govinfo.exceptions import GovInfoException
-
 from govinfo.packages import PackagesMixin
 
 
