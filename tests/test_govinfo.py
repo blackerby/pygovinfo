@@ -64,3 +64,16 @@ def test_build_packages_granules_request_with_args():
         "granuleClass": "something",
         "md5": "something",
     }
+
+
+def test_build_default_published_request():
+    govinfo = GovInfo()
+    path, params = govinfo._build_request(
+        "published", collection="bills", start_date="2025-06-20"
+    )
+    assert path == "published/2025-06-20"
+    assert params == {
+        "offsetMark": OFFSET_DEFAULT,
+        "pageSize": PAGE_DEFAULT,
+        "collection": "bills",
+    }

@@ -53,22 +53,34 @@ class GovInfo(Collections, Packages, Published):
     def _build_request(self, endpoint: str, **kwargs) -> RequestArgs:
         match kwargs:
             case {"collection": collection, "start_date": start_date, **params}:
-                endpoint_parts = [endpoint, collection, start_date]
-                params = params
+                if endpoint == "collections":
+                    endpoint_parts = [endpoint, collection, start_date]
+                    params = params
+                elif endpoint == "published":
+                    endpoint_parts = [endpoint, start_date]
+                    params = params
+                    params["collection"] = collection
             case {
                 "collection": collection,
                 "start_date": start_date,
                 "end_date": end_date,
                 **params,
             }:
-                endpoint_parts = [endpoint, collection, start_date, end_date]
-                params = params
+                if endpoint == "collections":
+                    endpoint_parts = [endpoint, collection, start_date, end_date]
+                    params = params
+                elif endpoint == "published":
+                    endpoint_parts = [endpoint, start_date, end_date]
+                    params = params
+                    params["collection"] = collection
             case {"package_id": package_id, **params}:
                 endpoint_parts = [endpoint, package_id, "granules"]
                 params = params
             case {**params}:
                 endpoint_parts = [endpoint]
                 params = params
+            case _:
+                raise GovInfoException
 
         path = "/".join(part for part in endpoint_parts if part is not None)
         params = self._set_params(**params)
