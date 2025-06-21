@@ -1,7 +1,7 @@
 [project]
 name = "govinfo"
 version = "0.2.0"
-description = "Add your description here"
+description = "A wrapper for the Government Publishing Office's GovInfo API"
 readme = "README.md"
 authors = [
     { name = "William Blackerby", email = "wmblackerby@gmail.com" }
