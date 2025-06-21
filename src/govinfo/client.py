@@ -50,16 +50,40 @@ class GovInfo(Collections, Packages, Published):
     def _is_api_key_set(self) -> bool:
         return self._api_key != "DEMO_KEY"
 
-    def _set_params(self, *args, **kwargs) -> dict[str, str]:
+    def _build_request(self, endpoint: str, **kwargs) -> RequestArgs:
+        match kwargs:
+            case {"collection": collection, "start_date": start_date, **params}:
+                endpoint_parts = [endpoint, collection, start_date]
+                params = params
+            case {
+                "collection": collection,
+                "start_date": start_date,
+                "end_date": end_date,
+                **params,
+            }:
+                endpoint_parts = [endpoint, collection, start_date, end_date]
+                params = params
+            case {"package_id": package_id, **params}:
+                endpoint_parts = [endpoint, package_id, "granules"]
+                params = params
+            case {**params}:
+                endpoint_parts = [endpoint]
+                params = params
+
+        path = "/".join(part for part in endpoint_parts if part is not None)
+        params = self._set_params(**params)
+        return (path, params)
+
+    def _set_params(self, **params) -> dict[str, str]:
         default_params = {"offsetMark": OFFSET_DEFAULT, "pageSize": PAGE_DEFAULT}
         params = (
             default_params
-            if not kwargs
+            if not params
             else default_params
             | {
                 key.split("_")[0]
                 + "".join(word.capitalize() for word in key.split("_")[1:]): value
-                for key, value in kwargs.items()
+                for key, value in params.items()
             }
         )
         return params

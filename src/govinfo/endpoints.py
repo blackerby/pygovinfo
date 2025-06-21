@@ -1,21 +1,11 @@
+"""Mixins corresponding to GovInfo API endpoints"""
+
 from govinfo.config import RequestArgs
 from govinfo.exceptions import GovInfoException
 from govinfo.models import Collection, Granule, Package
 
 
 class Collections:
-    def _build_collections_request(
-        self,
-        collection: str = None,
-        start_date: str = None,
-        end_date: str = None,
-        **kwargs,
-    ) -> RequestArgs:
-        endpoint_parts = ["collections", collection, start_date, end_date]
-        path = "/".join(part for part in endpoint_parts if part is not None)
-        params = self._set_params(**kwargs)
-        return (path, params)
-
     def collections(
         self,
         collection: str = None,
@@ -24,8 +14,12 @@ class Collections:
         **kwargs,
     ):
         """Call the collections endpoint of the GovInfo API."""
-        args = self._build_collections_request(
-            collection, start_date, end_date, **kwargs
+        args = self._build_request(
+            "collections",
+            collection=collection,
+            start_date=start_date,
+            end_date=end_date,
+            **kwargs,
         )
 
         try:
@@ -40,18 +34,9 @@ class Collections:
 
 
 class Packages:
-    def _build_granules_request(
-        self,
-        package_id: str,
-        **kwargs,
-    ) -> RequestArgs:
-        path = f"packages/{package_id}/granules"
-        params = self._set_params(**kwargs)
-        return (path, params)
-
     def granules(self, package_id: str, **kwargs):
         """Call the packages/{package_id}/granules endpoint of the GovInfo API."""
-        args = self._build_granules_request(package_id, **kwargs)
+        args = self._build_request("packages", package_id=package_id, **kwargs)
 
         try:
             for item in self._get("granules", args):

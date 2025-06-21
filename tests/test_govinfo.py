@@ -24,15 +24,19 @@ def test_govinfo_repr():
 
 def test_build_default_collections_request():
     govinfo = GovInfo()
-    path, params = govinfo._build_collections_request()
+    path, params = govinfo._build_request("collections")
     assert path == "collections"
     assert params == {"offsetMark": OFFSET_DEFAULT, "pageSize": PAGE_DEFAULT}
 
 
 def test_build_collections_request_with_args():
     govinfo = GovInfo()
-    path, params = govinfo._build_collections_request(
-        "bills", "2025-06-16T00:00:00Z", page_size=10, offset_mark="something"
+    path, params = govinfo._build_request(
+        "collections",
+        collection="bills",
+        start_date="2025-06-16T00:00:00Z",
+        page_size=10,
+        offset_mark="something",
     )
     assert path == "collections/bills/2025-06-16T00:00:00Z"
     assert params == {"offsetMark": "something", "pageSize": 10}
@@ -40,15 +44,18 @@ def test_build_collections_request_with_args():
 
 def test_build_default_packages_granules_request():
     govinfo = GovInfo()
-    path, params = govinfo._build_granules_request("CREC-2018-01-04")
+    path, params = govinfo._build_request("packages", package_id="CREC-2018-01-04")
     assert path == "packages/CREC-2018-01-04/granules"
     assert params == {"offsetMark": OFFSET_DEFAULT, "pageSize": PAGE_DEFAULT}
 
 
-def test_build__packages_granules_request_with_args():
+def test_build_packages_granules_request_with_args():
     govinfo = GovInfo()
-    path, params = govinfo._build_granules_request(
-        "CREC-2018-01-04", granule_class="something", md5="something"
+    path, params = govinfo._build_request(
+        "packages",
+        package_id="CREC-2018-01-04",
+        granule_class="something",
+        md5="something",
     )
     assert path == "packages/CREC-2018-01-04/granules"
     assert params == {
