@@ -1,5 +1,6 @@
 from govinfo.config import RequestArgs
 from govinfo.exceptions import GovInfoException
+from govinfo.models import Granule
 
 
 class PackagesMixin:
@@ -17,6 +18,7 @@ class PackagesMixin:
         args = self._build_granules_request(package_id, **kwargs)
 
         try:
-            return self._get("granules", args)
+            for item in self._get("granules", args):
+                yield Granule(**item).model_dump()
         except GovInfoException as e:
             raise e
