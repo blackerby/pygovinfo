@@ -1,2 +1,2 @@
-class GovinfoException(Exception):
+class GovInfoException(Exception):
     pass
