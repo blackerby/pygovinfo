@@ -1,6 +1,6 @@
 [project]
 name = "govinfo"
-version = "0.2.0"
+version = "0.2.1"
 description = "A wrapper for the Government Publishing Office's GovInfo API"
 readme = "README.md"
 authors = [
