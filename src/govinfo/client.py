@@ -87,14 +87,13 @@ class GovInfo:
         headers = {"x-api-key": self._api_key}
         with httpx.Client(headers=headers) as client:
             response = client.get(
-                "/".join([self._url, self._path]), params=self._params
+                "/".join((self._url, self._path)), params=self._params
             )
             try:
                 payload = response.json()
             except (ValueError, JSONDecodeError) as e:
                 raise GovInfoException("Bad JSON in response") from e
-            is_success = 299 >= response.status_code >= 200
-            if is_success:
+            if 299 >= response.status_code >= 200:
                 if endpoint is None:
                     yield payload
                 else:
@@ -122,36 +121,25 @@ class GovInfo:
         match kwargs:
             case {
                 "endpoint": endpoint,
-                "collection": collection,
                 "start_date": start_date,
                 **params,
             }:
-                if endpoint == "collections":
-                    endpoint_parts = [endpoint, collection, start_date]
-                    params = params
-                elif endpoint == "published":
-                    endpoint_parts = [endpoint, start_date]
-                    params = params
-                    params["collection"] = collection
-            case {
-                "endpoint": endpoint,
-                "collection": collection,
-                "start_date": start_date,
-                "end_date": end_date,
-                **params,
-            }:
+                end_date = params.get("end_date")
+                collection = params.get("collection")
+                if end_date:
+                    del params["end_date"]
                 if endpoint == "collections":
                     endpoint_parts = [endpoint, collection, start_date, end_date]
+                    del params["collection"]
                     params = params
                 elif endpoint == "published":
                     endpoint_parts = [endpoint, start_date, end_date]
                     params = params
-                    params["collection"] = collection
-            case {"endpoint": endpoint, "package_id": package_id, **params}:
-                endpoint_parts = [endpoint, package_id, "granules"]
+            case {"endpoint": "packages", "package_id": package_id, **params}:
+                endpoint_parts = ["packages", package_id, "granules"]
                 params = params
-            case {"endpoint": endpoint, **params}:
-                endpoint_parts = [endpoint]
+            case {"endpoint": "collections", **params}:
+                endpoint_parts = ["collections"]
                 params = params
             case _:
                 raise GovInfoException

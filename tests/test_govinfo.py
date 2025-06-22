@@ -35,10 +35,13 @@ def test_build_collections_request_with_args():
         endpoint="collections",
         collection="bills",
         start_date="2025-06-16T00:00:00Z",
+        end_date="2025-06-17T00:00:00Z",
         page_size=10,
         offset_mark="something",
     )
-    assert govinfo._path == "collections/bills/2025-06-16T00:00:00Z"
+    assert (
+        govinfo._path == "collections/bills/2025-06-16T00:00:00Z/2025-06-17T00:00:00Z"
+    )
     assert govinfo._params == {"offsetMark": "something", "pageSize": 10}
 
 
