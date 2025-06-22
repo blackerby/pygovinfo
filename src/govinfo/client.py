@@ -4,7 +4,7 @@ import httpx
 
 from govinfo.config import BASE_URL, KEYS, OFFSET_DEFAULT, PAGE_DEFAULT
 from govinfo.exceptions import GovInfoException
-from govinfo.models import Granule, Package, Collection
+from govinfo.models import Collection, Granule, Package
 
 
 class GovInfo:
@@ -118,7 +118,7 @@ class GovInfo:
     def _is_api_key_set(self) -> bool:
         return self._api_key != "DEMO_KEY"
 
-    def _build_request(self, **kwargs):
+    def _set_path_and_params(self, **kwargs):
         match kwargs:
             case {
                 "endpoint": endpoint,
@@ -160,7 +160,7 @@ class GovInfo:
         self._set_params(**params)
 
     def _call_endpoint(self, **kwargs):
-        self._build_request(**kwargs)
+        self._set_path_and_params(**kwargs)
         endpoint = kwargs.get("endpoint")
         collection = kwargs.get("collection")
         match (endpoint, collection):
