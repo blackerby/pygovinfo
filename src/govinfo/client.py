@@ -2,7 +2,7 @@ from json import JSONDecodeError
 
 import httpx
 
-from govinfo.config import BASE_URL, KEYS, OFFSET_DEFAULT, PAGE_DEFAULT, RequestArgs
+from govinfo.config import BASE_URL, KEYS, OFFSET_DEFAULT, PAGE_DEFAULT
 from govinfo.exceptions import GovInfoException
 from govinfo.models import Granule, Package, Collection
 
@@ -15,6 +15,10 @@ class GovInfo:
     def __init__(self, api_key: str = "DEMO_KEY"):
         self._url = f"{BASE_URL}"
         self._api_key = api_key
+        self._params = {
+            "offsetMark": OFFSET_DEFAULT,
+            "pageSize": PAGE_DEFAULT,
+        }
 
     def collections(
         self,
@@ -47,20 +51,14 @@ class GovInfo:
             raise e
 
     def summary(self, package_id: str, granule_id: str | None = None, **kwargs):
-        path = (
+        self._path = (
             f"packages/{package_id}/granules/{granule_id}/summary"
             if granule_id
             else f"packages/{package_id}/summary"
         )
-        params = self._set_params(**kwargs)
+        self._set_params(**kwargs)
         try:
-            for item in self._get(
-                endpoint=None,
-                args=(
-                    path,
-                    params,
-                ),
-            ):
+            for item in self._get(endpoint=None):
                 return item
         except GovInfoException as e:
             raise e
@@ -85,11 +83,12 @@ class GovInfo:
         except GovInfoException as e:
             raise e
 
-    def _get(self, endpoint: str, args: RequestArgs):
+    def _get(self, endpoint: str):
         headers = {"x-api-key": self._api_key}
-        path, params = args
         with httpx.Client(headers=headers) as client:
-            response = client.get("/".join([self._url, path]), params=params)
+            response = client.get(
+                "/".join([self._url, self._path]), params=self._params
+            )
             try:
                 payload = response.json()
             except (ValueError, JSONDecodeError) as e:
@@ -99,7 +98,7 @@ class GovInfo:
                 if endpoint is None:
                     yield payload
                 else:
-                    payload_key = self._set_payload_key(endpoint, path)
+                    payload_key = self._set_payload_key(endpoint, self._path)
                     for item in payload[payload_key]:
                         yield item
                     while next_page := payload.get("nextPage"):
@@ -119,7 +118,7 @@ class GovInfo:
     def _is_api_key_set(self) -> bool:
         return self._api_key != "DEMO_KEY"
 
-    def _build_request(self, **kwargs) -> RequestArgs:
+    def _build_request(self, **kwargs):
         match kwargs:
             case {
                 "endpoint": endpoint,
@@ -157,12 +156,11 @@ class GovInfo:
             case _:
                 raise GovInfoException
 
-        path = "/".join(part for part in endpoint_parts if part is not None)
-        params = self._set_params(**params)
-        return (path, params)
+        self._path = "/".join(part for part in endpoint_parts if part is not None)
+        self._set_params(**params)
 
     def _call_endpoint(self, **kwargs):
-        args = self._build_request(**kwargs)
+        self._build_request(**kwargs)
         endpoint = kwargs.get("endpoint")
         collection = kwargs.get("collection")
         match (endpoint, collection):
@@ -176,24 +174,17 @@ class GovInfo:
                 model = Package
 
         try:
-            for item in self._get(endpoint, args):
+            for item in self._get(endpoint):
                 yield model(**item).model_dump()
         except GovInfoException as e:
             raise e
 
-    def _set_params(self, **params) -> dict[str, str]:
-        default_params = {"offsetMark": OFFSET_DEFAULT, "pageSize": PAGE_DEFAULT}
-        params = (
-            default_params
-            if not params
-            else default_params
-            | {
-                key.split("_")[0]
-                + "".join(word.capitalize() for word in key.split("_")[1:]): value
-                for key, value in params.items()
-            }
-        )
-        return params
+    def _set_params(self, **params):
+        self._params |= {
+            key.split("_")[0]
+            + "".join(word.capitalize() for word in key.split("_")[1:]): value
+            for key, value in params.items()
+        }
 
     def _set_payload_key(self, endpoint: str, path: str) -> str:
         if endpoint == "collections" and path == "collections":

@@ -7,5 +7,3 @@ KEYS = {
     "published": "packages",
     "packages": "granules",
 }
-
-RequestArgs = tuple[str, dict]
