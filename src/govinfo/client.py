@@ -161,17 +161,16 @@ class GovInfo:
 
     def _call_endpoint(self, **kwargs):
         self._set_path_and_params(**kwargs)
+
         endpoint = kwargs.get("endpoint")
         collection = kwargs.get("collection")
         match (endpoint, collection):
             case ("collections", None):
                 model = Collection
-            case ("collections", _):
+            case ("collections" | "published", _):
                 model = Package
             case ("packages", None):
                 model = Granule
-            case ("published", _):
-                model = Package
 
         try:
             for item in self._get(endpoint):
@@ -188,7 +187,5 @@ class GovInfo:
 
     def _set_payload_key(self, endpoint: str, path: str) -> str:
         if endpoint == "collections" and path == "collections":
-            payload_key = "collections"
-        else:
-            payload_key = KEYS[endpoint]
-        return payload_key
+            return "collections"
+        return KEYS[endpoint]
