@@ -1,5 +1,5 @@
-from govinfo.provider import GovInfoProvider
 from govinfo.exceptions import GovInfoException
+from govinfo.provider import GovInfoProvider
 
 
 class GovInfo(GovInfoProvider):
