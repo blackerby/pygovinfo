@@ -1,5 +1,4 @@
 from govinfo.provider import GovInfoProvider
-from govinfo.config import BASE_URL, OFFSET_DEFAULT, PAGE_DEFAULT
 from govinfo.exceptions import GovInfoException
 
 
@@ -11,12 +10,7 @@ class GovInfo(GovInfoProvider):
     """
 
     def __init__(self, api_key: str = "DEMO_KEY"):
-        self._url = f"{BASE_URL}"
-        self._api_key = api_key
-        self._params = {
-            "offsetMark": OFFSET_DEFAULT,
-            "pageSize": PAGE_DEFAULT,
-        }
+        super().__init__(api_key)
 
     def collections(
         self,

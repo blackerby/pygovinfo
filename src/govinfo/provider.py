@@ -2,12 +2,20 @@ from json import JSONDecodeError
 
 import httpx
 
-from govinfo.config import KEYS
+from govinfo.config import BASE_URL, KEYS, OFFSET_DEFAULT, PAGE_DEFAULT
 from govinfo.exceptions import GovInfoException
 from govinfo.models import Collection, Granule, Package
 
 
 class GovInfoProvider:
+    def __init__(self, api_key):
+        self._url = f"{BASE_URL}"
+        self._api_key = api_key
+        self._params = {
+            "offsetMark": OFFSET_DEFAULT,
+            "pageSize": PAGE_DEFAULT,
+        }
+
     def _get_list(self, endpoint, **kwargs):
         try:
             yield from self._call_endpoint(
