@@ -8,13 +8,14 @@ from govinfo.models import Collection, Granule, Package
 
 
 class GovInfoProvider:
-    def __init__(self, api_key):
+    def __init__(self, api_key, transport):
         self._url = f"{BASE_URL}"
         self._api_key = api_key
         self._params = {
             "offsetMark": OFFSET_DEFAULT,
             "pageSize": PAGE_DEFAULT,
         }
+        self._transport = transport
 
     def _get_list(self, endpoint, **kwargs):
         try:
@@ -27,7 +28,7 @@ class GovInfoProvider:
 
     def _get(self, endpoint: str):
         headers = {"x-api-key": self._api_key}
-        with httpx.Client(headers=headers) as client:
+        with httpx.Client(headers=headers, transport=self._transport) as client:
             response = client.get(
                 "/".join((self._url, self._path)), params=self._params
             )
@@ -35,7 +36,7 @@ class GovInfoProvider:
                 payload = response.json()
             except (ValueError, JSONDecodeError) as e:
                 raise GovInfoException("Bad JSON in response") from e
-            if 299 >= response.status_code >= 200:
+            if response.status_code == 200:
                 if endpoint is None:
                     yield payload
                 else:

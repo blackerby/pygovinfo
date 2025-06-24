@@ -1,3 +1,5 @@
+import httpx
+
 from govinfo.exceptions import GovInfoException
 from govinfo.provider import GovInfoProvider
 
@@ -9,8 +11,8 @@ class GovInfo(GovInfoProvider):
     Users can supply an API key or use the default value, DEMO_KEY
     """
 
-    def __init__(self, api_key: str = "DEMO_KEY"):
-        super().__init__(api_key)
+    def __init__(self, api_key: str = "DEMO_KEY", transport=httpx.HTTPTransport()):
+        super().__init__(api_key, transport)
 
     def collections(
         self,

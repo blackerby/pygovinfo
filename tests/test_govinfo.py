@@ -1,3 +1,5 @@
+import data
+import httpx
 import pytest
 
 from govinfo import GovInfo
@@ -85,8 +87,13 @@ def test_build_default_published_request():
 
 
 def test_collections_no_args():
-    govinfo = GovInfo()
+    def handler(request):
+        return httpx.Response(200, json=data.collections)
+
+    transport = httpx.MockTransport(handler)
+    govinfo = GovInfo(transport=transport)
     collections = list(govinfo.collections())
+
     assert len(collections) == 40
 
 
