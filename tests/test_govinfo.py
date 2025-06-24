@@ -1,4 +1,3 @@
-from govinfo.exceptions import GovInfoException
 import pytest
 
 from govinfo import GovInfo
