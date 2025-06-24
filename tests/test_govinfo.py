@@ -1,3 +1,6 @@
+from govinfo.exceptions import GovInfoException
+import pytest
+
 from govinfo import GovInfo
 from govinfo.config import OFFSET_DEFAULT, PAGE_DEFAULT
 
@@ -80,3 +83,15 @@ def test_build_default_published_request():
         "pageSize": PAGE_DEFAULT,
         "collection": "bills",
     }
+
+
+def test_collections_no_args():
+    govinfo = GovInfo()
+    collections = list(govinfo.collections())
+    assert len(collections) == 40
+
+
+def test_collection_with_collection_no_start_date():
+    govinfo = GovInfo()
+    with pytest.raises(TypeError):
+        list(govinfo.collection("bills"))

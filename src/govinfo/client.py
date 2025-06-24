@@ -22,29 +22,37 @@ class GovInfo:
 
     def collections(
         self,
-        collection: str = None,
-        start_date: str = None,
-        end_date: str = None,
         **kwargs,
     ):
-        """Call the collections endpoint of the GovInfo API."""
+        """Call the collections endpoint of the GovInfo API.
 
-        try:
-            return self._call_endpoint(
-                endpoint="collections",
-                collection=collection,
-                start_date=start_date,
-                end_date=end_date,
-                **kwargs,
-            )
-        except GovInfoException as e:
-            raise e
+        Returns collections available from the GovInfo API.
+        """
+        yield from self._get_list(
+            "collections",
+            **kwargs,
+        )
+
+    def collection(
+        self, collection: str, start_date: str, end_date: str = None, **kwargs
+    ):
+        """
+        Returns new or updated packages for the specified collection since
+        the start date or with in the date range.
+        """
+        yield from self._get_list(
+            "collections",
+            collection=collection,
+            start_date=start_date,
+            end_date=end_date,
+            **kwargs,
+        )
 
     def granules(self, package_id: str, **kwargs):
         """Call the packages/{package_id}/granules endpoint of the GovInfo API."""
 
         try:
-            return self._call_endpoint(
+            yield from self._call_endpoint(
                 endpoint="packages", package_id=package_id, **kwargs
             )
         except GovInfoException as e:
@@ -66,18 +74,23 @@ class GovInfo:
     def published(
         self,
         collection: str,
-        start_date: str = None,
+        start_date: str,
         end_date: str = None,
         **kwargs,
     ):
         """Call the published endpoint of the GovInfo API."""
+        yield from self._get_list(
+            "published",
+            collection=collection,
+            start_date=start_date,
+            end_date=end_date,
+            **kwargs,
+        )
 
+    def _get_list(self, endpoint, **kwargs):
         try:
-            return self._call_endpoint(
-                endpoint="published",
-                collection=collection,
-                start_date=start_date,
-                end_date=end_date,
+            yield from self._call_endpoint(
+                endpoint=endpoint,
                 **kwargs,
             )
         except GovInfoException as e:
