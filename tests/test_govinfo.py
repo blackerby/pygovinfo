@@ -86,12 +86,13 @@ def test_build_default_published_request():
     }
 
 
-def test_collections_no_args():
+def test_collections():
     def handler(request):
         return httpx.Response(200, json=data.collections)
 
     transport = httpx.MockTransport(handler)
     govinfo = GovInfo(transport=transport)
+
     collections = list(govinfo.collections())
 
     assert len(collections) == 40
@@ -101,3 +102,30 @@ def test_collection_with_collection_no_start_date():
     govinfo = GovInfo()
     with pytest.raises(TypeError):
         list(govinfo.collection("bills"))
+
+
+def test_collection():
+    def handler(request):
+        return httpx.Response(200, json=data.bills)
+
+    transport = httpx.MockTransport(handler)
+    govinfo = GovInfo(transport=transport)
+
+    bills = list(govinfo.collection("bills", "2025-06-22T00:00:00Z", page_size=50))
+
+    # well-constructed path
+    assert govinfo._path == "collections/bills/2025-06-22T00:00:00Z"
+    # snake to camel conversion
+    assert "pageSize" in govinfo._params
+    # param value set
+    assert govinfo._params["pageSize"] == 50
+    # pydantic to_camel works
+    assert list(bills[0].keys()) == [
+        "package_id",
+        "last_modified",
+        "package_link",
+        "doc_class",
+        "title",
+        "congress",
+        "date_issued",
+    ]
